@@ -93,18 +93,60 @@ Create the canvas elements
 
 ## Binding it all together
 
-    if Meteor.isClient
-        Meteor.startup ->
-            $("#image").on "load", ->
-                makeTiles $ "#image"
-            $("body").on "mousemove", (e)->
-                handleDrag(e.pageX,e.pageY)
+    Meteor.startup ->
+        $("#image").on "load", ->
+            makeTiles $ "#image"
 
 
 # Handle drag
 
-    if Meteor.isClient
-        Meteor.startup ->
-            $(".drag").on "mousedown", ->
-                console.log this
+    moved = undefined
+
+    $moveElem = undefined
+
+    elemX0 = undefined
+    elemY0 = undefined
+    mouseX0 = undefined
+    mouseY0 = undefined
+
+    handleMove = (event) ->
+        dx = event.pageX - mouseX0
+        dy = event.pageY - mouseY0
+        x = elemX0 + dx
+        y = elemY0 + dy
+        $moveElem.css("left", x).css("top", y)
+        x += $moveElem.width() / 2
+        y = y + dy * 0.2
+        handleDrag(x, y)
+
+    handleLeave = ->
+        $("body").off "mousemove", handleMove
+        $("body").off "mouseleave mouseup", handleLeave
+        $tiles = $("#tileContainer canvas")
+        $tiles.css "transition", "height 1s"
+        setTimeout (-> $tiles.css "height", defaultHeight), 0
+        $moveElem.css "transition", "all 1s"
+        setTimeout (-> $moveElem.css "top", elemY0), 0
+        setTimeout (-> $moveElem.css "left", elemX0), 1000
+        $(".drag").removeClass "disabled"
+
+    Meteor.startup ->
+        $(".drag").on "mousedown", (event) ->
+            moveElem = event.currentTarget
+            $moveElem = $ moveElem
+            mouseX0 = event.pageX
+            mouseY0 = event.pageY
+            offset = $moveElem.offset()
+            elemX0 = offset.left
+            elemY0 = offset.top
+            $("body").on "mousemove", handleMove
+            $("body").on "mouseleave mouseup", handleLeave
+            console.log event
+            console.log this, typeof this
+            $(".drag").addClass "disabled"
+            $moveElem.removeClass "disabled"
+            $moveElem.css "transition", "all 0s"
+            $(".drag").addClass "opacity 1s"
+            $("#tileContainer canvas").css "transition", "height 0s"
+
  
