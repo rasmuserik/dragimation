@@ -28,7 +28,46 @@ The 2d-grid is the most approachable, so this is what we start out doing
 
 # Split into subimages
 
-    gridSize = 40
+    heightCuts = 1
+    widthCuts = 100 
+
+    makeTile = ($img, x, y, w, h) ->
+        $canvas = $ "<canvas></canvas>"
+        $canvas.addClass "tile"
+        $canvas.css("top", y).css("left", x)
+        $("#tileContainer").append $canvas
+        canvas = $canvas[0]
+        canvas.width = w
+        canvas.height = h
+        $canvas.css "height", h + Math.random() * 100
+        ctx = canvas.getContext "2d"
+        ctx.width = w
+        ctx.height = h
+        ctx.drawImage $img[0], x, y, w, h, 0, 0, w, h
+        return {
+            dom: canvas
+            x: x
+            y: y
+            }
+
+
+    makeTiles = ($img) ->
+        w = $img.width()
+        h = $img.height()
+        gridWidth = Math.floor w / widthCuts
+        gridHeight = Math.floor h / heightCuts
+        for x in [0..w] by gridWidth
+            for y in [0..h] by gridHeight
+                console.log makeTile $img, x, y, gridWidth, gridHeight
+
+
+
+    if Meteor.isClient
+        Meteor.startup ->
+            $("#image").on "load", ->
+                makeTiles $ "#image"
+            $("body").on "mousemove", (e)->
+                console.log e.pageX, e.pageY
 
 # Handle drag
 
