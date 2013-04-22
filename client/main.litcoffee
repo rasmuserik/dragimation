@@ -120,8 +120,8 @@ Create the canvas elements
         handleDrag(x, y)
 
     handleLeave = ->
-        $("body").off "mousemove", handleMove
-        $("body").off "mouseleave mouseup", handleLeave
+        $("body").off "mousemove touchmove", handleMove
+        $("body").off "mouseleave mouseup touchend", handleLeave
         $tiles = $("#tileContainer canvas")
         $tiles.css "transition", "height 1s"
         setTimeout (-> $tiles.css "height", defaultHeight), 0
@@ -129,24 +129,26 @@ Create the canvas elements
         setTimeout (-> $moveElem.css "top", elemY0), 0
         setTimeout (-> $moveElem.css "left", elemX0), 1000
         $(".drag").removeClass "disabled"
+        setTimeout (-> $(".drag").on "touchstart mousedown", handleTouch), 1100
+
+     handleTouch = (event) ->
+        $(".drag").off "touchstart mousedown", handleTouch
+        touch = event.touches?[0] || event
+        moveElem = event.currentTarget
+        $moveElem = $ moveElem
+        mouseX0 = touch.pageX
+        mouseY0 = touch.pageY
+        offset = $moveElem.offset()
+        elemX0 = offset.left
+        elemY0 = offset.top
+        $("body").on "mousemove touchmove", handleMove
+        $("body").on "mouseleave mouseup touchend", handleLeave
+        $(".drag").addClass "disabled"
+        $moveElem.removeClass "disabled"
+        $moveElem.css "transition", "all 0s"
+        $(".drag").addClass "opacity 1s"
+        $("#tileContainer canvas").css "transition", "height 0s"
 
     Meteor.startup ->
-        $(".drag").on "mousedown", (event) ->
-            moveElem = event.currentTarget
-            $moveElem = $ moveElem
-            mouseX0 = event.pageX
-            mouseY0 = event.pageY
-            offset = $moveElem.offset()
-            elemX0 = offset.left
-            elemY0 = offset.top
-            $("body").on "mousemove", handleMove
-            $("body").on "mouseleave mouseup", handleLeave
-            console.log event
-            console.log this, typeof this
-            $(".drag").addClass "disabled"
-            $moveElem.removeClass "disabled"
-            $moveElem.css "transition", "all 0s"
-            $(".drag").addClass "opacity 1s"
-            $("#tileContainer canvas").css "transition", "height 0s"
-
+        $(".drag").on "touchstart mousedown", handleTouch
  
