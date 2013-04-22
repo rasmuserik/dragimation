@@ -100,6 +100,7 @@ Create the canvas elements
             $("body").on "mousemove", (e)->
                 handleDrag(e.pageX,e.pageY)
 
+
 # Handle drag
 
     if Meteor.isClient
