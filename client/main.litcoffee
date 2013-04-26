@@ -13,32 +13,37 @@ Just transform af div with fixed top.
     ypos = .9
     xscale = undefined
     yscale = undefined
+    $drag2 = undefined
     Meteor.startup ->
-        initialiseMovement()
-        $("body").on "mousemove", move
+        $(".drag2")
+            .on "mousedown", ->
+                initialiseMovement this
+                $("body").on "mousemove", move
+                $("body").on "mouseup mouseleave", ->
+                    $("body").off "mousemove", move
+                    $drag2.css "transform", "matrix(1,0,0,1,0,0)"
+                false
 
     move = (e) ->
         x = (e.pageX - x0)/xscale
         y = (e.pageY - y0)/yscale
-        console.log x, y
         transform = [
             1, 0,
             3*(x-0.5)/ypos, y, 
             0, 0
         ]
-        console.log "c(#{transform})", xscale, yscale, xscale/yscale
-        $(".dragme").css "transform-origin", "top"
-        $(".dragme").css "transform", 
+        $drag2.css "transform-origin", "top"
+        $drag2.css "transform", 
             "matrix(#{transform})"
 
-    initialiseMovement = ->
-        console.log $ ".dragme"
-        pos = $(".dragme").position()
+    initialiseMovement = (drag2) ->
+        $drag2 = $ drag2
+        pos = $drag2.position()
         console.log pos
         x0 = pos.left
         y0 = pos.top
-        xscale = $(".dragme").outerWidth() 
-        yscale = $(".dragme").outerHeight() * ypos
+        xscale = $drag2.outerWidth() 
+        yscale = $drag2.outerHeight() * ypos
 
 # Image drag
 ## What
@@ -178,6 +183,7 @@ Create the canvas elements
         $moveElem.css "transition", "all 0s"
         $(".drag").addClass "opacity 1s"
         $("#tileContainer canvas").css "transition", "height 0s"
+        false
 
     Meteor.startup ->
         $(".drag").on "touchstart mousedown", handleTouch
