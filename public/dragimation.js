@@ -10,6 +10,8 @@
         $("body").off("mousemove", move);
         $dragged.css("transform", "matrix(1,0,0,1,0,0)");
         $dragged.css("-webkit-transform", "matrix(1,0,0,1,0,0)");
+        $dragged.css("-ms-transform", "matrix(1,0,0,1,0,0)");
+        $dragged.css("-moz-transform", "matrix(1,0,0,1,0,0)");
         return false;
       });
       return false;
@@ -37,8 +39,12 @@
       return $dragged.css({
         "transform-origin": "top",
         "-webkit-transform-origin": "top",
+        "-ms-transform-origin": "top",
+        "-moz-transform-origin": "top",
         "transform": transformStr,
-        "-webkit-transform": transformStr
+        "-webkit-transform": transformStr,
+        "-ms-transform": transformStr,
+        "-moz-transform": transformStr
       });
     };
   };

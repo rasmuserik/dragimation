@@ -2,9 +2,15 @@
 
 Draggable animation/effect - will be part of a menu...
 
-This is just a proof of concept, need refactoring, etc.
+This is just a proof of concept, errors may occur. Seems to work with Chrome, Firefox, 
 
-# Dragimation library
+# TODO
+
+- handle touch events
+- callbacks on done etc.
+- maybe IE5.5+ support via non-standard matrix filter
+
+# Source code
 
 Define `dragimation` function on global object
 
@@ -22,6 +28,8 @@ Listen for movement and mouseup on body as long as touched, then reset transform
                 $("body").off "mousemove", move
                 $dragged.css "transform", "matrix(1,0,0,1,0,0)"
                 $dragged.css "-webkit-transform", "matrix(1,0,0,1,0,0)"
+                $dragged.css "-ms-transform", "matrix(1,0,0,1,0,0)"
+                $dragged.css "-moz-transform", "matrix(1,0,0,1,0,0)"
                 false
             false
 
@@ -71,6 +79,9 @@ and do the transformation.
             $dragged.css 
                 "transform-origin": "top"
                 "-webkit-transform-origin": "top"
+                "-ms-transform-origin": "top"
+                "-moz-transform-origin": "top"
                 "transform": transformStr
                 "-webkit-transform": transformStr
-    
+                "-ms-transform": transformStr
+                "-moz-transform": transformStr
