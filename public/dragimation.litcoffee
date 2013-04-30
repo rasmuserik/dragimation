@@ -7,8 +7,9 @@ This is just a proof of concept, errors may occur. Seems to work with Chrome, Fi
 # TODO
 
 - handle touch events
+- only drag downwards
 - callbacks on done etc.
-- maybe IE5.5+ support via non-standard matrix filter
+- ie9
 
 # Source code
 
