@@ -16,7 +16,7 @@ This is just a proof of concept, errors may occur. Seems to work with Chrome, Fi
 Define `dragimation` function on global object
 
 
-    window.dragimation = ($elems, ypos)->
+    window.dragimation = ($elems, ypos, startDragFn, dragDoneFn)->
 
 ## Handle clicks
 
@@ -24,18 +24,23 @@ Define `dragimation` function on global object
         $elems.on "mousedown touchstart", (event) ->
             event.preventDefault() 
             initialiseMovement this
+            startDragFn?.call $dragged, event
 
 Listen for movement and mouseup on body as long as touched, then reset transform.
 
             $("body").on "mousemove touchmove", move
-            $("body").on "mouseup mouseleave touchend", ->
-                moving = false
-                $("body").off "mousemove", move
-                $dragged.css "transform", "matrix(1,0,0,1,0,0)"
-                $dragged.css "-webkit-transform", "matrix(1,0,0,1,0,0)"
-                $dragged.css "-ms-transform", "matrix(1,0,0,1,0,0)"
-                $dragged.css "-moz-transform", "matrix(1,0,0,1,0,0)"
-                false
+            $("body").on "mouseup mouseleave touchend", handleTouchEnd
+            false
+
+        handleTouchEnd = ->
+            dragDoneFn?.call $dragged, event if moving
+            moving = false
+            $("body").off "mousemove touchmove", move
+            $("body").off "mouseup mouseleave touchend", handleTouchEnd
+            $dragged.css "transform", "matrix(1,0,0,1,0,0)"
+            $dragged.css "-webkit-transform", "matrix(1,0,0,1,0,0)"
+            $dragged.css "-ms-transform", "matrix(1,0,0,1,0,0)"
+            $dragged.css "-moz-transform", "matrix(1,0,0,1,0,0)"
             false
 
 ## Keep track of element to transform
