@@ -15,17 +15,21 @@ This is just a proof of concept, errors may occur. Seems to work with Chrome, Fi
 
 Define `dragimation` function on global object
 
+
     window.dragimation = ($elems, ypos)->
 
 ## Handle clicks
 
-        $elems.on "mousedown", ->
+        moving = false
+        $elems.on "mousedown touchstart", (event) ->
+            event.preventDefault() 
             initialiseMovement this
 
 Listen for movement and mouseup on body as long as touched, then reset transform.
 
-            $("body").on "mousemove", move
-            $("body").on "mouseup mouseleave", ->
+            $("body").on "mousemove touchmove", move
+            $("body").on "mouseup mouseleave touchend", ->
+                moving = false
                 $("body").off "mousemove", move
                 $dragged.css "transform", "matrix(1,0,0,1,0,0)"
                 $dragged.css "-webkit-transform", "matrix(1,0,0,1,0,0)"
@@ -44,9 +48,11 @@ Variable in the closure, keeps track of the currently dragged object.
         xscale = undefined
         yscale = undefined
 
+
 When starting to drag figure remember the dragged element, and its position and size.
 
         initialiseMovement = (dragged) ->
+            moving = true
             $dragged = $ dragged
             pos = $dragged.offset()
             x0 = pos.left
@@ -59,11 +65,20 @@ When starting to drag figure remember the dragged element, and its position and 
 Transform the dragged element on mouse moved.
 
         move = (e) ->
+            if not moving 
+                return
 
 Figure out the current mouse position, with a base corresponding to the current element with origo/axis as the position and top/left-sides,
 
+            window.e = e
+
+            #alert JSON.stringify [typeof e, typeof e.touches, typeof e.pageX, typeof e.touches?[0], typeof e.touches?[0]?.pageX]
+            e = e.originalEvent.touches?[0] || e
+
             x = (e.pageX - x0)/xscale
             y = (e.pageY - y0)/yscale
+
+            y = Math.max(y, 1)
 
 
 calculate the transformation matrix,

@@ -2,11 +2,14 @@
 (function() {
 
   window.dragimation = function($elems, ypos) {
-    var $dragged, initialiseMovement, move, x0, xscale, y0, yscale;
-    $elems.on("mousedown", function() {
+    var $dragged, initialiseMovement, move, moving, x0, xscale, y0, yscale;
+    moving = false;
+    $elems.on("mousedown touchstart", function(event) {
+      event.preventDefault();
       initialiseMovement(this);
-      $("body").on("mousemove", move);
-      $("body").on("mouseup mouseleave", function() {
+      $("body").on("mousemove touchmove", move);
+      $("body").on("mouseup mouseleave touchend", function() {
+        moving = false;
         $("body").off("mousemove", move);
         $dragged.css("transform", "matrix(1,0,0,1,0,0)");
         $dragged.css("-webkit-transform", "matrix(1,0,0,1,0,0)");
@@ -23,6 +26,7 @@
     yscale = void 0;
     initialiseMovement = function(dragged) {
       var pos;
+      moving = true;
       $dragged = $(dragged);
       pos = $dragged.offset();
       x0 = pos.left;
@@ -31,9 +35,15 @@
       return yscale = $dragged.outerHeight() * ypos;
     };
     return move = function(e) {
-      var transform, transformStr, x, y;
+      var transform, transformStr, x, y, _ref;
+      if (!moving) {
+        return;
+      }
+      window.e = e;
+      e = ((_ref = e.originalEvent.touches) != null ? _ref[0] : void 0) || e;
       x = (e.pageX - x0) / xscale;
       y = (e.pageY - y0) / yscale;
+      y = Math.max(y, 1);
       transform = [1, 0, xscale / yscale * (x - 0.5), y, 0, 0];
       transformStr = "matrix(" + transform + ")";
       return $dragged.css({
