@@ -14,11 +14,9 @@
       $("body").on("mouseup mouseleave touchend", handleTouchEnd);
       return false;
     });
-    handleTouchEnd = function() {
-      if (moving) {
-        if (dragDoneFn != null) {
-          dragDoneFn.call($dragged, event);
-        }
+    handleTouchEnd = function(event) {
+      if (!moving) {
+        return;
       }
       moving = false;
       $("body").off("mousemove touchmove", move);
@@ -27,6 +25,9 @@
       $dragged.css("-webkit-transform", "matrix(1,0,0,1,0,0)");
       $dragged.css("-ms-transform", "matrix(1,0,0,1,0,0)");
       $dragged.css("-moz-transform", "matrix(1,0,0,1,0,0)");
+      if (dragDoneFn != null) {
+        dragDoneFn.call($dragged, event);
+      }
       return false;
     };
     x0 = void 0;

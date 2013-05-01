@@ -21,6 +21,7 @@ Define `dragimation` function on global object
 ## Handle clicks
 
         moving = false
+
         $elems.on "mousedown touchstart", (event) ->
             event.preventDefault() 
             initialiseMovement this
@@ -32,8 +33,9 @@ Listen for movement and mouseup on body as long as touched, then reset transform
             $("body").on "mouseup mouseleave touchend", handleTouchEnd
             false
 
-        handleTouchEnd = ->
-            dragDoneFn?.call $dragged, event if moving
+        handleTouchEnd = (event) ->
+            if not moving
+                return
             moving = false
             $("body").off "mousemove touchmove", move
             $("body").off "mouseup mouseleave touchend", handleTouchEnd
@@ -41,6 +43,7 @@ Listen for movement and mouseup on body as long as touched, then reset transform
             $dragged.css "-webkit-transform", "matrix(1,0,0,1,0,0)"
             $dragged.css "-ms-transform", "matrix(1,0,0,1,0,0)"
             $dragged.css "-moz-transform", "matrix(1,0,0,1,0,0)"
+            dragDoneFn?.call $dragged, event
             false
 
 ## Keep track of element to transform
